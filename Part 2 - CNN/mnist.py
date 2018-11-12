@@ -68,11 +68,11 @@ import torch.nn.functional as F
 import torch.optim as optim
 
 class Net(nn.Module):
-    def __init__(self):
+    def __init__(self, input_size=784, hidden_1=128, hidden_2 = 64, output = 10):
         super(Net, self).__init__()
-        self.fc1 = nn.Linear(28*28, 128)
-        self.fc2 = nn.Linear(128, 64)
-        self.fc3 = nn.Linear(64, 10)
+        self.fc1 = nn.Linear(input_size, hidden_1)
+        self.fc2 = nn.Linear(hidden_1, hidden_2)
+        self.fc3 = nn.Linear(hidden_2, output)
         
         self.dropout = nn.Dropout(0.3)
     
@@ -149,7 +149,7 @@ for i in range(10):
         print('Test Accuracy of %5s: N/A (no training examples)' % (classes[i]))
 
 print('\nTest Accuracy (Overall): %2d%% (%2d/%2d)' % (100. * np.sum(class_correct) / np.sum(class_total),
-                        np.sum(class_correct), np.sum(class_total)))
+                        np.sum(class_correct), np.sum(class_total)))    
 
 # Visualize Sample Test Results
 # obtain one batch of test images
@@ -171,5 +171,21 @@ for idx in np.arange(20):
     ax.set_title("{} ({})".format(str(preds[idx].item()), str(labels[idx].item())),
                  color=("green" if preds[idx]==labels[idx] else "red"))
 
+# Save the trained model
+checkpoint = {'input_size': 784,
+              'output_size': 10,
+              'hidden_layers': [128, 64],
+              'state_dict': model.state_dict()
+              }
 
+torch.save(checkpoint, 'mnist-nn.pth')
+
+# Code to load the saved model
+def load_checkpoint(filepath):
+    checkpoint = torch.load(filepath)
+    model = Net(checkpoint['input_size'], checkpoint['output_size'], checkpoint['hidden_layers'])
+    model.load_state_dict(checkpoint['state_dict'])
+    return model
+
+loaded_model = load_checkpoint('mnist-nn.pth')
 
