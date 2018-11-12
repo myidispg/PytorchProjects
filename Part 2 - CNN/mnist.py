@@ -118,7 +118,58 @@ for epoch in range(epochs):
     
 # TEST THE TRAINED NETWORK
 # initialize list to monitor test loss and accuracy    
+test_loss = 0.0
+class_correct = list(0. for i in range(10))
+class_total = list(0. for i in range(10))
 
+model.eval() # set the model to eval mode
+
+for data, labels in test_loader:
+    output = model(data)
+    loss = criterion(output, labels)
+    test_loss += loss.item()*data.size(0)
+    # convert output probabilities to predicted class
+    _, pred = torch.max(output, 1) # returns the max value and index along the rows.
+    correct = np.squeeze(pred.eq(labels.data.view_as(pred)))
+    # calculate the test accuracy
+    for i in range(batch_size):
+        label = labels.data[i]
+        class_correct[label] += correct[i].item()
+        class_total[label] += 1
+
+# calculate and print avg test loss
+test_loss = test_loss/len(test_loader.dataset)
+print('Test Loss: {:.6f}\n'.format(test_loss))
+
+for i in range(10):
+    if class_total[i] > 0:
+        print('Test Accuracy of %5s: %2d%% (%2d/%2d)' % (str(i), 100 * class_correct[i] / class_total[i],
+                                            np.sum(class_correct[i]), np.sum(class_total[i])))
+    else:
+        print('Test Accuracy of %5s: N/A (no training examples)' % (classes[i]))
+
+print('\nTest Accuracy (Overall): %2d%% (%2d/%2d)' % (100. * np.sum(class_correct) / np.sum(class_total),
+                        np.sum(class_correct), np.sum(class_total)))
+
+# Visualize Sample Test Results
+# obtain one batch of test images
+dataiter = iter(test_loader)
+images, labels = dataiter.next()
+
+# get sample outputs
+output = model(images)
+# convert output probabilities to predicted class
+_, preds = torch.max(output, 1)
+# prep images for display
+images = images.numpy()
+
+# plot the images in the batch, along with predicted and true labels
+fig = plt.figure(figsize=(25, 4))
+for idx in np.arange(20):
+    ax = fig.add_subplot(2, 20/2, idx+1, xticks=[], yticks=[])
+    ax.imshow(np.squeeze(images[idx]), cmap='gray')
+    ax.set_title("{} ({})".format(str(preds[idx].item()), str(labels[idx].item())),
+                 color=("green" if preds[idx]==labels[idx] else "red"))
 
 
 
