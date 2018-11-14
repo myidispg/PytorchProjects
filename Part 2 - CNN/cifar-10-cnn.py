@@ -47,8 +47,11 @@ valid_sampler = SubsetRandomSampler(valid_idx)
 # prepare data loaders(combine dataset and sampler)
 train_loader = torch.utils.data.DataLoader(train_data, batch_size = batch_size,
                                            sampler = train_sampler, num_workers=num_workers)
-test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size,
-                                        sampler=test_sampler, num_workers=num_workers)
+valid_loader = torch.utils.data.DataLoader(train_data, batch_size=batch_size, 
+    sampler=valid_sampler, num_workers=num_workers)
+test_loader = torch.utils.data.DataLoader(test_data, batch_size=batch_size, 
+    num_workers=num_workers)
+
 
 # Specify the image classes
 classes=['airplane', 'automobile', 'bird', 'cat', 'deer', 'dog', 'frog',
@@ -60,7 +63,7 @@ import matplotlib.pyplot as plt
 # helper function to un-normalize and display the image
 def imshow(img):
     img = img/2 + 0.5
-    plt.imshow(np.transpose())
+    plt.imshow(np.transpose(img))
 
 # obtain one batch of training images
 dataiter = iter(train_loader)
