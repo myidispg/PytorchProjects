@@ -121,7 +121,7 @@ class Network(nn.Module):
         # 500 -> 10
         self.fc2 = nn.Linear(500, 10)
         
-        self.dropout = nn.Dropout(0.25)
+        self.dropout = nn.Dropout(0.3)
         
     def forward(self, x):
         x = self.pool(F.relu(self.conv1(x))) # output = 31x31x16 -> 16x16x16
