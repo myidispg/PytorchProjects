@@ -26,6 +26,8 @@ batch_size = 20
 valid_size = 0.2 # percentage of train to use as validation set
 
 transform = transforms.Compose([
+        transforms.RandomHorizontalFlip(), # randomly flip and rotate
+        transforms.RandomRotation(10),
         transforms.ToTensor(),
         transforms.Normalize((0.5,0.5,0.5),(0.5,0.5,0.5))
         ])
